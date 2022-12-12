@@ -9,11 +9,12 @@ use point2::Point2;
 fn main() {
     let path = Path::new("../input.txt");
     let file = File::open(path).unwrap();
-    let mut set = HashSet::new();
+
     let start: Point2<i32> = Point2::default();
-    let mut head = start;
-    let mut tail = start;
-    set.insert(tail);
+    let mut rope = vec![start; 10];
+    let mut set = HashSet::new();
+    set.insert(*rope.last().unwrap());
+
     for line in io::BufReader::new(file).lines().map(|l| l.unwrap()) {
         let mut words = line.split_ascii_whitespace();
         let direction = Point2::from(match words.next().unwrap() {
@@ -28,15 +29,17 @@ fn main() {
             None => 1,
         };
         for _ in 0..count {
-            let old = head;
-            head += direction;
-            let dv = head - tail; //tail to head
-            if dv.x.abs() > 1 || dv.y.abs() > 1 {
-                tail = old;
-                set.insert(tail);
+            rope[0] += direction;
+            for i in 1..rope.len() {
+                let mut dv = rope[i] - rope[i - 1]; //head to tail
+                let len = ((dv.x * dv.x + dv.y * dv.y) as f64).sqrt();
+                dv.x = (dv.x as f64 / len).round() as i32;
+                dv.y = (dv.y as f64 / len).round() as i32;
+                rope[i] = rope[i - 1] + dv;
             }
+            set.insert(*rope.last().unwrap());
         }
     }
 
-    println!("part 1: {}", set.len())
+    println!("{}", set.len())
 }
