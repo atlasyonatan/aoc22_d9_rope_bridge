@@ -6,15 +6,6 @@ pub struct Point2<T> {
     pub y: T,
 }
 
-impl<T> From<(T, T)> for Point2<T> {
-    fn from(tuple: (T, T)) -> Self {
-        Self {
-            x: tuple.0,
-            y: tuple.1,
-        }
-    }
-}
-
 impl<T> Add for Point2<T>
 where
     T: Add<Output = T>,
